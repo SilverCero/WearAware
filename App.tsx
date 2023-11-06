@@ -4,9 +4,9 @@
  *
  * @format
  */
-
-import React from 'react';
-import type {PropsWithChildren} from 'react';
+import ImagePicker from 'react-native-image-picker';
+import React, { useState } from 'react';
+import type { PropsWithChildren } from 'react';
 import {
   SafeAreaView,
   ScrollView,
@@ -15,6 +15,10 @@ import {
   Text,
   useColorScheme,
   View,
+  Image,
+  Button,
+  Modal,
+  TextInput,
 } from 'react-native';
 
 import {
@@ -55,44 +59,62 @@ function Section({children, title}: SectionProps): JSX.Element {
   );
 }
 
+function selectImage() {
+  const options = {
+    title: 'Select Image',
+    storageOptions: {
+      skipBackup: true,
+      path: 'images',
+    },
+  };
+  ImagePicker.showImagePicker(options, (response) => {
+    if (response.didCancel) {
+      console.log('User cancelled image picker');
+    } else if (response.error) {
+      console.log('ImagePicker Error: ', response.error);
+    } else {
+      // You can use the selected image's URI for display or further processing.
+      const selectedImageUri = response.uri;
+    }
+  });
+
+};
 function App(): JSX.Element {
   const isDarkMode = useColorScheme() === 'dark';
 
+  const [showAuthModal, setShowAuthModal] = useState(false);
+  const [isSignIn, setIsSignIn] = useState(true); // Por defecto, mostrará el formulario de Sign In
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+
   const backgroundStyle = {
     backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
+    flex: 1,
   };
 
   return (
-    <SafeAreaView style={backgroundStyle}>
-      <StatusBar
-        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-        backgroundColor={backgroundStyle.backgroundColor}
+    <View style={backgroundStyle}>
+      <Image
+        source={require('C:/Users/silve/OneDrive/Documents/Semestre 9/TC2007B.501/WearAware/images/P1.jpg')}
+        style={{ width: '100%', height: '20%' }}
       />
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        style={backgroundStyle}>
-        <Header />
-        <View
-          style={{
-            backgroundColor: isDarkMode ? Colors.black : Colors.white,
-          }}>
-          <Section title="Step One">
-            Edit <Text style={styles.highlight}>App.tsx</Text> to change this
-            screen and then come back to see your edits.
-          </Section>
-          <Section title="See Your Changes">
-            <ReloadInstructions />
-          </Section>
-          <Section title="Debug">
-            <DebugInstructions />
-          </Section>
-          <Section title="Learn More">
-            Read the docs to discover what to do next:
-          </Section>
-          <LearnMoreLinks />
+
+      <View style={styles.textContainer}>
+        <Text style={styles.sectionTitle}>Closet Virtual</Text>
+      </View>
+
+      <View style={styles.buttonContainer}>
+        <View style={styles.roundButton}>
+          <Image
+          source={require('C:/Users/silve/OneDrive/Documents/Semestre 9/TC2007B.501/WearAware/images/add-button.png')}
+          style={{ width: '100%', height: '100%' }}
+          />
+          <Button title="Add new cloathes" onPress={() => { selectImage() }} />
         </View>
-      </ScrollView>
-    </SafeAreaView>
+      </View>
+    </View>
   );
 }
 
@@ -101,18 +123,27 @@ const styles = StyleSheet.create({
     marginTop: 32,
     paddingHorizontal: 24,
   },
+  textContainer:{
+    flex: 1,
+    alignItems: 'center',
+  },
+  buttonContainer: {
+    position: 'absolute',
+    top: 200, // Position at the top
+    left: 0, // Position at the left
+    padding: 10, // Optional padding for the button
+  },
   sectionTitle: {
     fontSize: 24,
     fontWeight: '600',
   },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
+  roundButton: {
+    width: 120,
+    height: 120,
+    borderRadius: 100,
+    justifyContent: '',
   },
-  highlight: {
-    fontWeight: '700',
-  },
+
 });
 
 export default App;
